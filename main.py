@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time
-import teste
+#import camera_control
 GPIO.setmode(GPIO.BCM)
 from gpiozero import Motor
 
@@ -19,7 +19,7 @@ motorR = Motor(19, 26)
 # Motor B, Right Side GPIO CONSTANTS
 motorL = Motor(5, 6)
 
-teste.helloWord()
+
 print " SETUP "
 
 GPIO.setup(TRIG_front, GPIO.OUT)
@@ -63,6 +63,7 @@ def avoid_left():
 
 #ler distancia da esquerda
 def avoid_right():  
+	print"toanocu"
 	GPIO.output(TRIG_right, False)
 	time.sleep(0.5)
     
@@ -73,6 +74,7 @@ def avoid_right():
 
 	while GPIO.input(ECHO_right) == 0:
 		pulse_start = time.time()
+		print"sifude" 
 		
 	while GPIO.input(ECHO_right) == 1:
 		pulse_end = time.time()
@@ -86,6 +88,12 @@ def avoid_right():
 	
 #Mainprogram
 while autonomous:
+	modo = True #camera_control.modo()
+	
+	if modo == "manual":
+		autonomous = False
+		
+	
 	GPIO.output(TRIG_front, False)
 	time.sleep(0.5)
 
@@ -105,13 +113,14 @@ while autonomous:
 	distance_front = round(distance_front,2)
 	
 	print " Distance: ", distance_front, " cm"
-	motorR.forward(0.7)
-	motorL.forward(0.7)
+	motorR.forward(0.9)
+	motorL.forward(0.6)
 		
-	if distance_front < 10:
+	if distance_front < 12:
 		
 		motorR.stop()
 		motorL.stop()
+		time.sleep(1)
 		
         #mede distancias laterias
 		distance_left = avoid_left()
@@ -120,14 +129,13 @@ while autonomous:
 		print " Distance Front: ", distance_front, " cm"
 		print " Distance Left: ", distance_left, " cm"
 		print " Distance Right: ", distance_right, " cm"
-		time.sleep(1)
-
+		
 		if distance_left < distance_right:
             #vire para a direita
 			print" turning right"
 			motorR.forward(0.7)
-			motorL.backward(0.7)
-			time.sleep(1)
+			motorL.backward(1)
+			time.sleep(0.5)
 			
 			motorR.stop()
 			motorL.stop()
@@ -137,8 +145,8 @@ while autonomous:
             #vire para a direita
 			print "turning left"
 			motorR.backward(0.7)
-			motorL.forward(0.7)
-			time.sleep(1)
+			motorL.forward(1)
+			time.sleep(0.5)
 			
 			motorR.stop()
 			motorL.stop()
